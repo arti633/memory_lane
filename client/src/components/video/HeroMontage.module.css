@@ -1,0 +1,146 @@
+.montage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: black;
+  display: block;
+  --duration: 15s;
+  --ken-scale: 1.06;
+  --warm-opacity: 0.9;
+  --leak-opacity: 0.9;
+  --grain-opacity: 0.25;
+  --vignette-strength: 0.0;
+}
+
+.baseFade {
+  position: absolute;
+  inset: 0;
+  background: black;
+  animation: fadeIn var(--duration, 15s) linear infinite;
+  pointer-events: none;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  will-change: opacity, transform;
+  animation-name: slideFade, kenburns;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.image {
+  background-repeat: no-repeat;
+}
+
+.videoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.warmGrade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,240,220,0.08), rgba(255,200,150,0.08));
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  opacity: var(--warm-opacity, 0.9);
+}
+
+.lightLeaks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(30% 60% at 10% 10%, rgba(255,180,120,0.12), transparent 15%),
+              radial-gradient(20% 40% at 90% 80%, rgba(255,200,150,0.08), transparent 15%);
+  mix-blend-mode: screen;
+  opacity: var(--leak-opacity, 0.9);
+  animation: leakMove 12s ease-in-out infinite;
+}
+
+.filmGrain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-opacity, 0.25);
+  animation: grainShift 8s linear infinite;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 200px rgba(0,0,0,var(--vignette-strength, 0.35));
+  mix-blend-mode: multiply;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 1; }
+  6% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* slideFade: each slide uses the full montage duration but with an offset (animation-delay)
+   - shows briefly for its segment, with smooth crossfade in/out */
+@keyframes slideFade {
+  0% { opacity: 0; }
+  6% { opacity: 1; }
+  30% { opacity: 1; }
+  36% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* subtle zoom/pan */
+@keyframes kenburns {
+  0% { transform: scale(1) translateY(0) translateX(0); }
+  100% { transform: scale(var(--ken-scale, 1.06)) translateY(-1.5%) translateX(1%); }
+}
+
+/* Reflective preset tweaks */
+.montage[data-preset="reflective"] {
+  --ken-scale: 1.08;
+  --warm-opacity: 0.98;
+  --leak-opacity: 0.95;
+  --grain-opacity: 0.34;
+  --vignette-strength: 0.42;
+}
+
+.montage[data-preset="reflective"] .slide {
+  /* slower, more gradual motion */
+  animation-timing-function: ease-in-out;
+}
+
+.montage[data-preset="reflective"] .lightLeaks {
+  animation-duration: 18s;
+}
+
+.montage[data-preset="reflective"] .filmGrain {
+  animation-duration: 6s;
+}
+
+@keyframes leakMove {
+  0% { transform: translateY(0) translateX(0); opacity: 0.9 }
+  50% { transform: translateY(-4%) translateX(3%); opacity: 0.95 }
+  100% { transform: translateY(0) translateX(0); opacity: 0.9 }
+}
+
+@keyframes grainShift {
+  0% { background-position: 0 0; }
+  50% { background-position: 10px 10px; }
+  100% { background-position: 0 0; }
+}
